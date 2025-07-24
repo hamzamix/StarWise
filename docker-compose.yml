@@ -1,4 +1,4 @@
-version: '3.8'
+
 services:
   frontend:
     build: ./frontend
@@ -7,4 +7,4 @@ services:
   backend:
     build: ./backend
     ports:
-      - "8000:8000"
+      - "8220:8000"
