@@ -1,14 +1,17 @@
 # Stage 1: Build the React application
-# Use the -slim image for better compatibility with npm packages
-FROM node:18-slim as builder
+# Use the full Node.js 18 image for maximum compatibility with build tools.
+FROM node:18 as builder
 
 WORKDIR /app
 
-# Copy package.json and package-lock.json (if available)
-COPY package*.json ./
+# Copy package.json and the lock file if it exists.
+# This takes advantage of Docker's layer caching.
+COPY package.json ./
+# If package-lock.json exists, copy it. If not, this command is skipped without error.
+COPY package-lock.json ./
 
-# Install dependencies
-RUN npm install
+# Install dependencies. Using --verbose to get more logs if it fails again.
+RUN npm install --verbose
 
 # Copy the rest of the application files
 COPY . .
