@@ -1,2 +1,3 @@
-# StarWise
-Smart GitHub Stars Manager
+# Starwise
+
+A self-hosted GitHub stars manager powered by Gemini AI.
