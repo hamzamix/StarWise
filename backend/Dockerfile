@@ -6,11 +6,12 @@ WORKDIR /app
 # Install poetry
 RUN pip install poetry==1.8.2
 
-# Copy only the dependency definition files
-COPY pyproject.toml poetry.lock ./
+# Copy only the dependency definition file
+COPY pyproject.toml ./
 
 # Install dependencies into a virtual environment
 # This creates a virtual environment in /.venv, which we'll copy to the final stage
+# The 'poetry install' command will generate a poetry.lock file here.
 RUN poetry config virtualenvs.in-project false && \
     poetry config virtualenvs.path /.venv && \
     poetry install --no-root --no-dev
