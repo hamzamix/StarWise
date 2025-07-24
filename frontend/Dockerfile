@@ -1,9 +1,10 @@
 # Stage 1: Build the React application
-FROM node:18-alpine as builder
+# Use the -slim image for better compatibility with npm packages
+FROM node:18-slim as builder
 
 WORKDIR /app
 
-# Copy package.json and package-lock.json (or yarn.lock)
+# Copy package.json and package-lock.json (if available)
 COPY package*.json ./
 
 # Install dependencies
