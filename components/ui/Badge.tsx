@@ -12,12 +12,15 @@ const badgeVariants = {
 
 export interface BadgeProps extends React.HTMLAttributes<HTMLDivElement> {
   variant?: keyof typeof badgeVariants.variant;
+  children?: React.ReactNode;
 }
 
-function Badge({ className, variant = "default", ...props }: BadgeProps) {
+function Badge({ className, variant = "default", children, ...props }: BadgeProps) {
   const classes = `inline-flex items-center rounded-md border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 ${badgeVariants.variant[variant]} ${className || ''}`;
   return (
-    <div className={classes} {...props} />
+    <div className={classes} {...props}>
+        {children}
+    </div>
   );
 }
 
