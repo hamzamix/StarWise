@@ -8,6 +8,10 @@ const handleResponse = async (response: Response) => {
         const error = await response.json().catch(() => ({ detail: 'An unknown error occurred' }));
         throw new Error(error.detail || `HTTP error! status: ${response.status}`);
     }
+    // For successful responses, if there's no content, return null instead of trying to parse JSON.
+    if (response.status === 204 || response.headers.get('content-length') === '0') {
+        return null;
+    }
     return response.json();
 };
 
@@ -24,13 +28,9 @@ export const apiService = {
 
     getStarredRepos: async (forceRefresh = false): Promise<Repository[]> => {
         const response = await fetch(`${API_BASE_URL}/repos/starred?force_refresh=${forceRefresh}`);
-        // The backend returns repos with snake_case keys, so we need to map them
+        // The data from the backend already matches our Repository type. No mapping is needed.
         const data = await handleResponse(response);
-        return data.map((repo: any) => ({
-            ...repo,
-            fullName: repo.full_name,
-            githubId: repo.github_id,
-        }));
+        return data || [];
     },
     
     updateRepoTags: async (repoId: number, tags: string[]): Promise<Repository> => {
@@ -39,12 +39,8 @@ export const apiService = {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(tags),
         });
-        const data = await handleResponse(response);
-        return {
-            ...data,
-            fullName: data.full_name,
-            githubId: data.github_id,
-        };
+        // The data from the backend already matches our Repository type. No mapping is needed.
+        return handleResponse(response);
     },
 
     suggestTags: async (repoId: number): Promise<string[]> => {
