@@ -1,0 +1,5 @@
+{
+  "name": "Starwise",
+  "description": "An application to help users manage and categorize their GitHub starred repositories using AI.",
+  "requestFramePermissions": []
+}
