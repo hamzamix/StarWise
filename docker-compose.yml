@@ -1,0 +1,27 @@
+
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - "8530:8000"
+    volumes:
+      - ./starwise_data:/app/data
+    env_file:
+      - .env
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "3530:80"
+    depends_on:
+      - backend
+    restart: unless-stopped
+
+volumes:
+  starwise_data:
+    driver: local
