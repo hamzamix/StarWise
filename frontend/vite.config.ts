@@ -12,16 +12,17 @@ export default defineConfig({
   plugins: [react()],
   server: {
     port: 3000,
+    // This proxy is for local development (`npm run dev`) only.
+    // In production, Nginx handles the proxying.
     proxy: {
       '/api': {
-        target: 'http://backend:8000', // Use the service name for Docker networking
+        target: 'http://localhost:8000',
         changeOrigin: true,
       }
     }
   },
   resolve: {
     alias: {
-      // Set up the '@' alias to point to the 'src' directory
       "@": path.resolve(__dirname, "./src"),
     },
   },
