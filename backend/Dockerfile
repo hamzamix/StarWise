@@ -1,5 +1,4 @@
-# Stage 1: Build dependencies with Poetry, no virtualenv
-FROM python:3.11-slim AS builder
+FROM python:3.11-slim
 
 WORKDIR /app
 
@@ -13,19 +12,7 @@ COPY pyproject.toml poetry.lock ./
 RUN poetry config virtualenvs.create false \
  && poetry install --no-dev --no-interaction --no-root
 
-# Copy application code
-COPY ./app /app/app
-
-# Stage 2: Final production image
-FROM python:3.11-slim
-
-WORKDIR /app
-
-# Copy installed site-packages and binaries
-COPY --from=builder /usr/local/lib/python3.11/site-packages /usr/local/lib/python3.11/site-packages
-COPY --from=builder /usr/local/bin /usr/local/bin
-
-# Copy app code
+# Copy app source code
 COPY ./app /app/app
 
 EXPOSE 8000
