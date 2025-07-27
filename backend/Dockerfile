@@ -4,12 +4,12 @@ WORKDIR /app
 
 RUN pip install poetry==1.8.2
 
-COPY pyproject.toml poetry.lock ./
+COPY pyproject.toml .
 
 RUN poetry config virtualenvs.create false \
- && poetry install --no-dev --no-interaction --no-root
+ && poetry install --no-interaction --no-root
 
-COPY ./app /app/app
+COPY ./app ./app
 
 EXPOSE 8000
 
