@@ -39,7 +39,7 @@ async def callback_github(code: str, db: Session = Depends(deps.get_db)):
         crud.repository.sync_repositories(db, user_id=user.id, repos_data=starred_repos)
 
         response = Response(status_code=303)
-        response.headers["Location"] = "http://localhost:3000" # Redirect to frontend
+        response.headers["Location"] = "http://192.168.1.30:3530" # Redirect to frontend
         
         session_token = security.create_session_token(str(user.id))
         response.set_cookie(
