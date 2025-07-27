@@ -1,9 +1,8 @@
-# THIS IS AN EXAMPLE. If this fails, let me know, and I can regenerate for you.
+# THIS IS A MINIMAL LOCKFILE. If this fails, let me know and I will generate a full one for you.
 
 [[package]]
 name = "fastapi"
 version = "0.111.0"
-description = "FastAPI framework, high performance, easy to learn, fast to code, ready for production"
 category = "main"
 optional = false
 python-versions = ">=3.7,<4.0"
@@ -11,7 +10,6 @@ python-versions = ">=3.7,<4.0"
 [[package]]
 name = "uvicorn"
 version = "0.29.0"
-description = "The lightning-fast ASGI server."
 category = "main"
 optional = false
 python-versions = ">=3.7"
@@ -19,7 +17,6 @@ python-versions = ">=3.7"
 [[package]]
 name = "sqlalchemy"
 version = "2.0.29"
-description = "Database Abstraction Library"
 category = "main"
 optional = false
 python-versions = ">=3.8"
