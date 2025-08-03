@@ -1,14 +1,6 @@
-// frontend/src/services/apiService.ts
-
 import { User, Repository } from '@/types';
 
-// Change this line:
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL; // Use the environment variable
-
-// Add a check to ensure the variable is defined (good practice)
-if (typeof API_BASE_URL === 'undefined') {
-    throw new Error('NEXT_PUBLIC_API_BASE_URL environment variable is not defined.');
-}
+const API_BASE_URL = '/api'; // Using relative URL for proxying
 
 const handleResponse = async (response: Response) => {
     if (!response.ok) {
@@ -36,7 +28,7 @@ export const apiService = {
         const data = await handleResponse(response);
         return data || [];
     },
-
+    
     updateRepoTags: async (repoId: number, tags: string[]): Promise<Repository> => {
         const response = await fetch(`${API_BASE_URL}/repos/${repoId}/tags`, {
             method: 'POST',
