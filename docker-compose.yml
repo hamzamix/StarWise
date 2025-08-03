@@ -1,3 +1,4 @@
+# StarWise/docker-compose.yml
 
 services:
   backend:
@@ -9,7 +10,7 @@ services:
     volumes:
       - ./starwise_data:/app/data
     env_file:
-      - .env
+      - ./backend/.env  # <--- Change this line to point to the new file
     restart: unless-stopped
 
   frontend:
@@ -20,6 +21,8 @@ services:
       - "3530:80"
     depends_on:
       - backend
+    env_file:
+      - ./frontend/.env.local # <--- Add this line for the frontend
     restart: unless-stopped
 
 volumes:
