@@ -2,14 +2,13 @@
 FROM node:20-alpine AS builder
 WORKDIR /app
 
-# Copy package files and install dependencies for the frontend
-COPY package*.json ./
+# Copy frontend package files and install dependencies
+COPY frontend/package*.json ./frontend/
+WORKDIR /app/frontend
 RUN npm install
 
 # Copy the rest of the frontend source code and build it
-COPY . .
-# The "tsc &&" part is removed as Vite handles TypeScript compilation.
-# If you have a separate tsconfig.json for type-checking, you can keep it.
+COPY frontend/. ./frontend/
 RUN npm run build
 
 # Stage 2: Build the production server
@@ -18,7 +17,7 @@ WORKDIR /app
 
 # Copy the built frontend from the 'builder' stage to the 'public' directory
 # The backend is configured to serve files from here.
-COPY --from=builder /app/dist ./public
+COPY --from=builder /app/frontend/dist ./public
 
 # Copy backend package files and install production dependencies
 COPY backend/package*.json ./backend/
