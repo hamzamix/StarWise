@@ -72,9 +72,10 @@ interface User {
 
 // --- Helpers ---
 
-const formatTimeAgo = (dateString) => {
+const formatTimeAgo = (dateString: string | null | undefined) => {
   if (!dateString) return '';
   const date = new Date(dateString);
+  if (isNaN(date.getTime())) return ''; // Check for invalid date
   const now = new Date();
   const seconds = Math.floor((now.getTime() - date.getTime()) / 1000);
 
@@ -91,7 +92,7 @@ const formatTimeAgo = (dateString) => {
   return `${Math.floor(seconds)} seconds ago`;
 };
 
-const getLanguageColor = (lang) => {
+const getLanguageColor = (lang: string | null | undefined) => {
     if (!lang) return '#ccc';
     let hash = 0;
     for (let i = 0; i < lang.length; i++) {
@@ -343,7 +344,6 @@ function ListManagementPopover({ repo, lists, open, anchorEl, onClose, onMoveRep
 }
 
 interface RepoCardProps {
-  key?: any;
   repo: Repo;
   lists: List[];
   onMoveRepo: (repoId: number, listId: string) => Promise<void>;
@@ -944,7 +944,7 @@ function ListsPage() {
                         <Typography variant="h6">Lists ({lists.length})</Typography>
                         <Stack direction="row" spacing={1}>
                             <FormControl size="small" sx={{minWidth: 80}}>
-                                <InputLabel id="list-sort-label"><span>Sort</span></InputLabel>
+                                <InputLabel id="list-sort-label">Sort</InputLabel>
                                 <Select
                                   labelId="list-sort-label"
                                   id="list-sort-select"
