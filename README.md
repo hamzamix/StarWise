@@ -113,3 +113,18 @@ You will need two terminals open to run both the backend and frontend servers.
 ### 5. Open the App
 
 Open your web browser and navigate to the frontend URL provided by Vite: **[http://localhost:5173](http://localhost:5173)**. The application should now be running correctly.
+
+## Running with Docker
+
+You can also run the entire application in a single Docker container using Docker Compose.
+
+1.  **Ensure Docker is installed** and running on your machine.
+2.  **Make sure you have configured `backend/.env`** as described in Step 3 of the local installation.
+3.  From the root directory of the project, run:
+    ```bash
+    docker-compose up --build
+    ```
+4.  This command will build the Docker image (which includes building the frontend and installing backend dependencies) and start the container.
+5.  Open your browser and navigate to **[http://localhost:4000](http://localhost:4000)**. The application should be running.
+
+To stop the application, press `Ctrl+C` in the terminal and then run `docker-compose down`.
