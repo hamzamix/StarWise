@@ -108,7 +108,7 @@ const getLanguageColor = (lang: string | null | undefined) => {
 
 // --- Theme Definitions ---
 
-const getTheme = (mode) => createTheme({
+const getTheme = (mode: 'light' | 'dark') => createTheme({
   palette: {
     mode,
     ...(mode === 'dark'
@@ -187,26 +187,40 @@ const filterButtonStyle = (theme) => ({
   },
 });
 
-function RepoFilters({ filters, onFiltersChange, languages }) {
-  const [typeAnchor, setTypeAnchor] = useState(null);
-  const [langAnchor, setLangAnchor] = useState(null);
-  const [sortAnchor, setSortAnchor] = useState(null);
+interface RepoFiltersProps {
+    filters: {
+        type: string;
+        language: string;
+        sort: string;
+    };
+    onFiltersChange: React.Dispatch<React.SetStateAction<{
+        type: string;
+        language: string;
+        sort: string;
+    }>>;
+    languages: string[];
+}
 
-  const handleFilterChange = (key, value) => {
+function RepoFilters({ filters, onFiltersChange, languages }: RepoFiltersProps) {
+  const [typeAnchor, setTypeAnchor] = useState<HTMLElement | null>(null);
+  const [langAnchor, setLangAnchor] = useState<HTMLElement | null>(null);
+  const [sortAnchor, setSortAnchor] = useState<HTMLElement | null>(null);
+
+  const handleFilterChange = (key: string, value: string) => {
     onFiltersChange(prev => ({ ...prev, [key]: value }));
     setTypeAnchor(null);
     setLangAnchor(null);
     setSortAnchor(null);
   };
   
-  const sortOptions = {
+  const sortOptions: { [key: string]: string } = {
     'recently-starred': 'Recently starred',
     'recently-active': 'Recently active',
     'stars-desc': 'Most stars',
     'name-asc': 'Name (A-Z)',
   };
 
-  const typeOptions = {
+  const typeOptions: { [key: string]: string } = {
     'all': 'All',
     'public': 'Public',
     'private': 'Private',
@@ -219,7 +233,7 @@ function RepoFilters({ filters, onFiltersChange, languages }) {
   return (
     <Stack direction="row" spacing={1}>
         {/* Type Filter */}
-        <Button sx={filterButtonStyle} size="small" endIcon={<ArrowDropDownIcon />} onClick={(e) => setTypeAnchor(e.currentTarget)}>
+        <Button sx={filterButtonStyle} size="small" endIcon={<ArrowDropDownIcon />} onClick={(e: React.MouseEvent<HTMLElement>) => setTypeAnchor(e.currentTarget)}>
             <Typography component="span" sx={{ fontWeight: 400, color: 'text.secondary', mr: 0.5 }}>Type:</Typography>
             <Typography component="span" sx={{ fontWeight: 600 }}>{typeOptions[filters.type]}</Typography>
         </Button>
@@ -235,7 +249,7 @@ function RepoFilters({ filters, onFiltersChange, languages }) {
         </Menu>
         
         {/* Language Filter */}
-        <Button sx={filterButtonStyle} size="small" endIcon={<ArrowDropDownIcon />} onClick={(e) => setLangAnchor(e.currentTarget)}>
+        <Button sx={filterButtonStyle} size="small" endIcon={<ArrowDropDownIcon />} onClick={(e: React.MouseEvent<HTMLElement>) => setLangAnchor(e.currentTarget)}>
             <Typography component="span" sx={{ fontWeight: 400, color: 'text.secondary', mr: 0.5 }}>Language</Typography>
             {filters.language !== 'all' && (
                 <Typography component="span" sx={{ fontWeight: 600 }}>: {filters.language}</Typography>
@@ -249,7 +263,7 @@ function RepoFilters({ filters, onFiltersChange, languages }) {
         </Menu>
 
         {/* Sort Filter */}
-        <Button sx={filterButtonStyle} size="small" endIcon={<ArrowDropDownIcon />} onClick={(e) => setSortAnchor(e.currentTarget)}>
+        <Button sx={filterButtonStyle} size="small" endIcon={<ArrowDropDownIcon />} onClick={(e: React.MouseEvent<HTMLElement>) => setSortAnchor(e.currentTarget)}>
             <Typography component="span" sx={{ fontWeight: 400, color: 'text.secondary', mr: 0.5 }}>Sort by:</Typography>
             <Typography component="span" sx={{ fontWeight: 600 }}>{sortOptions[filters.sort]}</Typography>
         </Button>
@@ -262,8 +276,17 @@ function RepoFilters({ filters, onFiltersChange, languages }) {
   );
 }
 
+interface ListManagementPopoverProps {
+    repo: Repo;
+    lists: List[];
+    open: boolean;
+    anchorEl: HTMLElement | null;
+    onClose: () => void;
+    onMoveRepo: (repoId: number, listId: string) => Promise<void>;
+    onCreateList: (listName: string) => Promise<List | null>;
+}
 
-function ListManagementPopover({ repo, lists, open, anchorEl, onClose, onMoveRepo, onCreateList }) {
+function ListManagementPopover({ repo, lists, open, anchorEl, onClose, onMoveRepo, onCreateList }: ListManagementPopoverProps) {
   const [search, setSearch] = useState('');
   const [newListName, setNewListName] = useState('');
 
@@ -271,7 +294,7 @@ function ListManagementPopover({ repo, lists, open, anchorEl, onClose, onMoveRep
     return lists.filter(l => l.name.toLowerCase().includes(search.toLowerCase()));
   }, [lists, search]);
   
-  const handleToggleList = (listId) => {
+  const handleToggleList = (listId: string) => {
     onMoveRepo(repo.id, listId);
   };
   
@@ -354,10 +377,10 @@ interface RepoCardProps {
   onTagClick: (tag: string) => void;
 }
 
-function RepoCard({ repo, lists, onMoveRepo, onAddTag, onDeleteTag, onSuggestTags, onCreateList, onTagClick }: RepoCardProps) {
+const RepoCard: React.FC<RepoCardProps> = ({ repo, lists, onMoveRepo, onAddTag, onDeleteTag, onSuggestTags, onCreateList, onTagClick }) => {
   const [newTag, setNewTag] = useState('');
   const [isSuggesting, setIsSuggesting] = useState(false);
-  const [listMenuAnchor, setListMenuAnchor] = useState(null);
+  const [listMenuAnchor, setListMenuAnchor] = useState<HTMLElement | null>(null);
 
   const handleAddTag = () => {
     if (newTag.trim()) {
@@ -377,7 +400,7 @@ function RepoCard({ repo, lists, onMoveRepo, onAddTag, onDeleteTag, onSuggestTag
     }
   };
   
-  const handleTagClick = (tag) => {
+  const handleTagClick = (tag: string) => {
     if (onTagClick) {
       onTagClick(tag);
     }
@@ -488,7 +511,7 @@ function RepoCard({ repo, lists, onMoveRepo, onAddTag, onDeleteTag, onSuggestTag
               variant="outlined"
               size="small"
               startIcon={<DehazeIcon />}
-              onClick={(e) => setListMenuAnchor(e.currentTarget)}
+              onClick={(e: React.MouseEvent<HTMLElement>) => setListMenuAnchor(e.currentTarget)}
               sx={theme => ({ whiteSpace: 'nowrap', ...cardActionButtonStyle(theme) })}
           >
               MANAGE LISTS
@@ -501,15 +524,15 @@ function RepoCard({ repo, lists, onMoveRepo, onAddTag, onDeleteTag, onSuggestTag
         open={Boolean(listMenuAnchor)}
         anchorEl={listMenuAnchor}
         onClose={() => setListMenuAnchor(null)}
-        onMoveRepo={(repoId, listId) => {
-            onMoveRepo(repoId, listId);
+        onMoveRepo={async (repoId, listId) => {
+            await onMoveRepo(repoId, listId);
             // Don't close popover, allows for multiple changes
         }}
         onCreateList={onCreateList}
      />
      </>
   );
-}
+};
 
 // --- Pages ---
 
@@ -548,7 +571,7 @@ function HomePage() {
     };
   }, [searchInput]);
 
-  const fetchRepos = useCallback(async (pageNum, searchTermParam, currentFilters) => {
+  const fetchRepos = useCallback(async (pageNum: number, searchTermParam: string, currentFilters: typeof filters) => {
     setLoading(true);
     try {
       const params = new URLSearchParams({
@@ -628,13 +651,13 @@ function HomePage() {
       const res = await axios.post<List>(`${API_BASE_URL}/api/lists`, { name: listName });
       fetchLists();
       return res.data;
-    } catch (e) {
+    } catch (e: any) {
       alert(e.response?.data?.error || 'Failed to create list');
       return null;
     }
   };
 
-  const handlePageChange = (event, value) => {
+  const handlePageChange = (event: React.ChangeEvent<unknown>, value: number) => {
     fetchRepos(value, debouncedSearch, filters);
   };
   
@@ -732,7 +755,7 @@ function ListsPage() {
     const [totalPages, setTotalPages] = useState(0);
     
     // State for editing/deleting lists
-    const [editMenuAnchor, setEditMenuAnchor] = useState(null);
+    const [editMenuAnchor, setEditMenuAnchor] = useState<HTMLElement | null>(null);
     const [listInFocus, setListInFocus] = useState<List | null>(null);
     const [isRenameDialogOpen, setRenameDialogOpen] = useState(false);
     const [isDeleteDialogOpen, setDeleteDialogOpen] = useState(false);
@@ -772,7 +795,7 @@ function ListsPage() {
         return sorted;
     }, [lists, sortOrder]);
 
-    const fetchReposForList = useCallback(async (listId, pageNum = 1, searchTermParam = '', currentFilters) => {
+    const fetchReposForList = useCallback(async (listId: string | null, pageNum = 1, searchTermParam = '', currentFilters: typeof filters) => {
         if (!listId) {
             setRepos([]);
             setTotalPages(0);
@@ -840,7 +863,7 @@ function ListsPage() {
             fetchLists();
             setCreateListDialogOpen(false);
             return res.data;
-        } catch (e) {
+        } catch (e: any) {
             alert(e.response?.data?.error || 'Failed to create list');
             return null;
         }
@@ -888,7 +911,7 @@ function ListsPage() {
         }
     };
 
-    const handlePageChange = (event, value) => {
+    const handlePageChange = (event: React.ChangeEvent<unknown>, value: number) => {
         fetchReposForList(selectedListId, value, debouncedSearch, filters);
     };
     
@@ -901,7 +924,7 @@ function ListsPage() {
           fetchLists(); // This will re-render the list with the new name
           setRenameDialogOpen(false);
           setListInFocus(null);
-        } catch (e) {
+        } catch (e: any) {
           alert(e.response?.data?.error || 'Failed to rename list');
         }
     };
@@ -921,7 +944,7 @@ function ListsPage() {
         }
     };
       
-    const openEditMenu = (event, list) => {
+    const openEditMenu = (event: React.MouseEvent<HTMLElement>, list: List) => {
         setEditMenuAnchor(event.currentTarget);
         setListInFocus(list);
     };
@@ -1144,7 +1167,7 @@ function ListsPage() {
 
 // --- Main App Logic ---
 
-function App({ toggleTheme, mode }) {
+function App({ toggleTheme, mode }: { toggleTheme: () => void; mode: 'light' | 'dark' }) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [loadingText, setLoadingText] = useState('Checking login status...');
@@ -1275,10 +1298,10 @@ function App({ toggleTheme, mode }) {
 
 
 function AppWrapper() {
-  const [mode, setMode] = useState(() => {
+  const [mode, setMode] = useState<'light' | 'dark'>(() => {
     try {
       const savedMode = localStorage.getItem('themeMode');
-      return savedMode || 'dark';
+      return (savedMode === 'light' || savedMode === 'dark') ? savedMode : 'dark';
     } catch {
       return 'dark';
     }
@@ -1304,7 +1327,7 @@ function AppWrapper() {
 }
 
 const container = document.getElementById('root');
-const root = createRoot(container);
+const root = createRoot(container!);
 root.render(
   <React.StrictMode>
     <AppWrapper />
