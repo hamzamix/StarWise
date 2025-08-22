@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   starwise:
     # This tells Docker Compose to build the image from the Dockerfile
@@ -21,4 +19,5 @@ services:
 
 # Defines the named volume used for data persistence.
 volumes:
+
   starwise_db:
