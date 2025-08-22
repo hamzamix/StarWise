@@ -1,5 +1,4 @@
 
-
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { createRoot } from 'react-dom/client';
 import axios from 'axios';
@@ -31,8 +30,44 @@ import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 
 
-const API_BASE_URL = 'http://localhost:4000';
+const API_BASE_URL = '';
 axios.defaults.withCredentials = true;
+
+// --- Type Definitions ---
+interface Repo {
+  id: number;
+  full_name: string;
+  html_url: string;
+  description: string | null;
+  stargazers_count: number;
+  forks_count: number;
+  language: string | null;
+  fork: boolean;
+  owner: {
+    login: string;
+    avatar_url: string;
+  };
+  starred_at: string;
+  updated_at: string;
+  aiTags?: string[];
+  userTags?: string[];
+  listIds?: string[];
+  private: boolean;
+  is_template: boolean;
+  mirror_url: string | null;
+}
+
+interface List {
+    id: string;
+    name: string;
+    repoCount?: number;
+}
+
+interface User {
+    displayName?: string;
+    username?: string;
+    photos?: { value: string }[];
+}
 
 
 // --- Helpers ---
@@ -309,14 +344,14 @@ function ListManagementPopover({ repo, lists, open, anchorEl, onClose, onMoveRep
 
 interface RepoCardProps {
   key?: any;
-  repo: any;
-  lists: any[];
-  onMoveRepo: (repoId: any, listId: any) => Promise<void>;
-  onAddTag: (repoId: any, tag: any) => Promise<void>;
-  onDeleteTag: (repoId: any, tag: any) => Promise<void>;
-  onSuggestTags: (repoId: any) => Promise<void>;
-  onCreateList: (listName: any) => Promise<any>;
-  onTagClick: (tag: any) => void;
+  repo: Repo;
+  lists: List[];
+  onMoveRepo: (repoId: number, listId: string) => Promise<void>;
+  onAddTag: (repoId: number, tag: string) => Promise<void>;
+  onDeleteTag: (repoId: number, tag: string) => Promise<void>;
+  onSuggestTags: (repoId: number) => Promise<void>;
+  onCreateList: (listName: string) => Promise<List | null>;
+  onTagClick: (tag: string) => void;
 }
 
 function RepoCard({ repo, lists, onMoveRepo, onAddTag, onDeleteTag, onSuggestTags, onCreateList, onTagClick }: RepoCardProps) {
@@ -379,9 +414,11 @@ function RepoCard({ repo, lists, onMoveRepo, onAddTag, onDeleteTag, onSuggestTag
             </Stack>
             {repo.updated_at && (
                 <Tooltip title={new Date(repo.updated_at).toLocaleString()}>
-                    <Typography variant="body2" component="span">
-                        Updated {formatTimeAgo(repo.updated_at)}
-                    </Typography>
+                    <span>
+                        <Typography variant="body2" component="span">
+                            Updated {formatTimeAgo(repo.updated_at)}
+                        </Typography>
+                    </span>
                 </Tooltip>
             )}
             <Stack direction="row" alignItems="center" spacing={0.5}>
@@ -477,14 +514,14 @@ function RepoCard({ repo, lists, onMoveRepo, onAddTag, onDeleteTag, onSuggestTag
 // --- Pages ---
 
 function HomePage() {
-  const [repos, setRepos] = useState([]);
-  const [lists, setLists] = useState([]);
+  const [repos, setRepos] = useState<Repo[]>([]);
+  const [lists, setLists] = useState<List[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [searchInput, setSearchInput] = useState('');
   const [debouncedSearch, setDebouncedSearch] = useState('');
   const [filters, setFilters] = useState({ type: 'all', language: 'all', sort: 'recently-starred' });
-  const [languages, setLanguages] = useState([]);
+  const [languages, setLanguages] = useState<string[]>([]);
 
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
@@ -522,7 +559,7 @@ function HomePage() {
         language: currentFilters.language,
         sort: currentFilters.sort,
       });
-      const res = await axios.get(`${API_BASE_URL}/api/repos?${params.toString()}`);
+      const res = await axios.get<{ repos: Repo[], totalPages: number, currentPage: number }>(`${API_BASE_URL}/api/repos?${params.toString()}`);
       setRepos(res.data.repos);
       setTotalPages(res.data.totalPages);
       setPage(res.data.currentPage);
@@ -536,7 +573,7 @@ function HomePage() {
 
   const fetchLists = useCallback(async () => {
     try {
-      const res = await axios.get(`${API_BASE_URL}/api/lists`);
+      const res = await axios.get<List[]>(`${API_BASE_URL}/api/lists`);
       setLists(res.data);
     } catch (e) { console.error('Failed to fetch lists', e); }
   }, []);
@@ -549,35 +586,35 @@ function HomePage() {
     fetchRepos(1, debouncedSearch, filters);
   }, [debouncedSearch, filters, fetchRepos]);
 
-  const updateRepoInState = (updatedRepo) => {
+  const updateRepoInState = (updatedRepo: Repo) => {
     setRepos(currentRepos => currentRepos.map(r => r.id === updatedRepo.id ? updatedRepo : r));
   };
   
-  const handleMoveRepo = async (repoId, listId) => {
+  const handleMoveRepo = async (repoId: number, listId: string) => {
      try {
-       const res = await axios.post(`${API_BASE_URL}/api/repos/${repoId}/move`, { listId });
+       const res = await axios.post<Repo>(`${API_BASE_URL}/api/repos/${repoId}/move`, { listId });
        updateRepoInState(res.data);
        fetchLists();
     } catch (e) { alert('Failed to move repo'); }
   };
 
-  const handleAddTag = async (repoId, tag) => {
+  const handleAddTag = async (repoId: number, tag: string) => {
     try {
-      const res = await axios.post(`${API_BASE_URL}/api/repos/${repoId}/tags`, { tag });
+      const res = await axios.post<Repo>(`${API_BASE_URL}/api/repos/${repoId}/tags`, { tag });
       updateRepoInState(res.data);
     } catch (e) { alert('Failed to add tag'); }
   };
 
-  const onDeleteTag = async (repoId, tag) => {
+  const onDeleteTag = async (repoId: number, tag: string) => {
     try {
-      const res = await axios.delete(`${API_BASE_URL}/api/repos/${repoId}/tags`, { data: { tag }});
+      const res = await axios.delete<Repo>(`${API_BASE_URL}/api/repos/${repoId}/tags`, { data: { tag }});
       updateRepoInState(res.data);
     } catch(e) { alert('Failed to delete tag'); }
   }
   
-  const handleSuggestTags = async (repoId) => {
+  const handleSuggestTags = async (repoId: number) => {
     try {
-        const res = await axios.post(`${API_BASE_URL}/api/repos/${repoId}/suggest-tags`);
+        const res = await axios.post<Repo>(`${API_BASE_URL}/api/repos/${repoId}/suggest-tags`);
         updateRepoInState(res.data);
     } catch (e) {
         alert('Failed to suggest new tags.');
@@ -585,10 +622,10 @@ function HomePage() {
     }
   };
 
-  const handleCreateList = async (listName) => {
+  const handleCreateList = async (listName: string): Promise<List | null> => {
     if (!listName.trim()) return null;
     try {
-      const res = await axios.post(`${API_BASE_URL}/api/lists`, { name: listName });
+      const res = await axios.post<List>(`${API_BASE_URL}/api/lists`, { name: listName });
       fetchLists();
       return res.data;
     } catch (e) {
@@ -601,7 +638,7 @@ function HomePage() {
     fetchRepos(value, debouncedSearch, filters);
   };
   
-  const handleTagClick = (tag) => {
+  const handleTagClick = (tag: string) => {
     setSearchInput(tag);
   };
 
@@ -678,9 +715,9 @@ function HomePage() {
 }
 
 function ListsPage() {
-    const [lists, setLists] = useState([]);
-    const [selectedListId, setSelectedListId] = useState(null);
-    const [repos, setRepos] = useState([]);
+    const [lists, setLists] = useState<List[]>([]);
+    const [selectedListId, setSelectedListId] = useState<string | null>(null);
+    const [repos, setRepos] = useState<Repo[]>([]);
     const [newListName, setNewListName] = useState('');
     const [loadingRepos, setLoadingRepos] = useState(false);
     const [isCreateListDialogOpen, setCreateListDialogOpen] = useState(false);
@@ -689,14 +726,14 @@ function ListsPage() {
     const [searchInput, setSearchInput] = useState('');
     const [debouncedSearch, setDebouncedSearch] = useState('');
     const [filters, setFilters] = useState({ type: 'all', language: 'all', sort: 'recently-starred' });
-    const [languages, setLanguages] = useState([]);
+    const [languages, setLanguages] = useState<string[]>([]);
 
     const [page, setPage] = useState(1);
     const [totalPages, setTotalPages] = useState(0);
     
     // State for editing/deleting lists
     const [editMenuAnchor, setEditMenuAnchor] = useState(null);
-    const [listInFocus, setListInFocus] = useState(null);
+    const [listInFocus, setListInFocus] = useState<List | null>(null);
     const [isRenameDialogOpen, setRenameDialogOpen] = useState(false);
     const [isDeleteDialogOpen, setDeleteDialogOpen] = useState(false);
     const [renameValue, setRenameValue] = useState('');
@@ -704,7 +741,7 @@ function ListsPage() {
 
     const fetchLists = useCallback(async () => {
         try {
-            const res = await axios.get(`${API_BASE_URL}/api/lists`);
+            const res = await axios.get<List[]>(`${API_BASE_URL}/api/lists`);
             setLists(res.data);
         } catch (e) { console.error(e); }
     }, []);
@@ -712,7 +749,7 @@ function ListsPage() {
     useEffect(() => {
         const fetchLanguages = async () => {
           try {
-            const res = await axios.get(`${API_BASE_URL}/api/languages`);
+            const res = await axios.get<string[]>(`${API_BASE_URL}/api/languages`);
             setLanguages(res.data);
           } catch (e) { console.error("Failed to fetch languages", e); }
         };
@@ -726,7 +763,7 @@ function ListsPage() {
 
         sorted.sort((a, b) => {
             if (sortBy === 'name') return a.name.localeCompare(b.name);
-            if (sortBy === 'count') return a.repoCount - b.repoCount;
+            if (sortBy === 'count' && a.repoCount && b.repoCount) return a.repoCount - b.repoCount;
             return 0;
         });
 
@@ -752,7 +789,7 @@ function ListsPage() {
                 language: currentFilters.language,
                 sort: currentFilters.sort,
             });
-            const res = await axios.get(`${API_BASE_URL}/api/repos?${params.toString()}`);
+            const res = await axios.get<{ repos: Repo[], totalPages: number, currentPage: number }>(`${API_BASE_URL}/api/repos?${params.toString()}`);
             setRepos(res.data.repos);
             setTotalPages(res.data.totalPages);
             setPage(res.data.currentPage);
@@ -783,22 +820,22 @@ function ListsPage() {
       }
     }, [selectedListId, debouncedSearch, filters, fetchReposForList]);
 
-    const handleListClick = (listId) => {
+    const handleListClick = (listId: string) => {
         setSelectedListId(listId);
         setSearchInput('');
         setPage(1);
         setFilters({ type: 'all', language: 'all', sort: 'recently-starred' });
     };
     
-    const handleTagClick = (tag) => {
+    const handleTagClick = (tag: string) => {
       setSearchInput(tag);
     };
 
-    const handleCreateList = async (name) => {
+    const handleCreateList = async (name: string): Promise<List | null> => {
         const listName = name || newListName;
         if (!listName.trim()) return null;
         try {
-            const res = await axios.post(`${API_BASE_URL}/api/lists`, { name: listName.trim() });
+            const res = await axios.post<List>(`${API_BASE_URL}/api/lists`, { name: listName.trim() });
             setNewListName('');
             fetchLists();
             setCreateListDialogOpen(false);
@@ -809,13 +846,13 @@ function ListsPage() {
         }
     };
     
-    const updateRepoInState = (updatedRepo) => {
+    const updateRepoInState = (updatedRepo: Repo) => {
       setRepos(currentRepos => currentRepos.map(r => r.id === updatedRepo.id ? updatedRepo : r));
     };
 
-    const handleMoveRepo = async (repoId, listId) => {
+    const handleMoveRepo = async (repoId: number, listId: string) => {
        try {
-         const res = await axios.post(`${API_BASE_URL}/api/repos/${repoId}/move`, { listId });
+         const res = await axios.post<Repo>(`${API_BASE_URL}/api/repos/${repoId}/move`, { listId });
          const updatedRepo = res.data;
 
          if (selectedListId && !updatedRepo.listIds?.includes(selectedListId)) {
@@ -827,23 +864,23 @@ function ListsPage() {
       } catch (e) { alert('Failed to move repo'); }
     };
   
-    const handleAddTag = async (repoId, tag) => {
+    const handleAddTag = async (repoId: number, tag: string) => {
       try {
-        const res = await axios.post(`${API_BASE_URL}/api/repos/${repoId}/tags`, { tag });
+        const res = await axios.post<Repo>(`${API_BASE_URL}/api/repos/${repoId}/tags`, { tag });
         updateRepoInState(res.data);
       } catch (e) { alert('Failed to add tag'); }
     };
   
-    const onDeleteTag = async (repoId, tag) => {
+    const onDeleteTag = async (repoId: number, tag: string) => {
       try {
-        const res = await axios.delete(`${API_BASE_URL}/api/repos/${repoId}/tags`, { data: { tag }});
+        const res = await axios.delete<Repo>(`${API_BASE_URL}/api/repos/${repoId}/tags`, { data: { tag }});
         updateRepoInState(res.data);
       } catch(e) { alert('Failed to delete tag'); }
     }
     
-    const handleSuggestTags = async (repoId) => {
+    const handleSuggestTags = async (repoId: number) => {
         try {
-            const res = await axios.post(`${API_BASE_URL}/api/repos/${repoId}/suggest-tags`);
+            const res = await axios.post<Repo>(`${API_BASE_URL}/api/repos/${repoId}/suggest-tags`);
             updateRepoInState(res.data);
         } catch (e) {
             alert('Failed to suggest new tags.');
@@ -907,9 +944,10 @@ function ListsPage() {
                         <Typography variant="h6">Lists ({lists.length})</Typography>
                         <Stack direction="row" spacing={1}>
                             <FormControl size="small" sx={{minWidth: 80}}>
-                                <InputLabel id="list-sort-label">Sort</InputLabel>
+                                <InputLabel id="list-sort-label"><span>Sort</span></InputLabel>
                                 <Select
                                   labelId="list-sort-label"
+                                  id="list-sort-select"
                                   value={sortOrder}
                                   label="Sort"
                                   onChange={e => setSortOrder(e.target.value)}
@@ -1107,13 +1145,13 @@ function ListsPage() {
 // --- Main App Logic ---
 
 function App({ toggleTheme, mode }) {
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [loadingText, setLoadingText] = useState('Checking login status...');
   const [page, setPage] = useState('home'); // 'home' or 'lists'
 
   useEffect(() => {
-    axios.get(`${API_BASE_URL}/api/user`)
+    axios.get<{ user: User | null }>(`${API_BASE_URL}/api/user`)
       .then(res => setUser(res.data.user || null))
       .catch(() => setUser(null))
       .finally(() => setLoading(false));
@@ -1215,7 +1253,9 @@ function App({ toggleTheme, mode }) {
              </Button>
              <Button variant="contained" size="small" onClick={fetchStarsAndTags} disabled={loading}>Sync GitHub Stars</Button>
              <Tooltip title={user.displayName || user.username || ''}>
-                <Avatar src={user.photos?.[0]?.value} alt={user.displayName || user.username} sx={{width: 32, height: 32}} />
+                <span>
+                  <Avatar src={user.photos?.[0]?.value} alt={user.displayName || user.username} sx={{width: 32, height: 32}} />
+                </span>
              </Tooltip>
              <IconButton onClick={toggleTheme} color="inherit">
                 {mode === 'dark' ? <Brightness7Icon /> : <Brightness4Icon />}
