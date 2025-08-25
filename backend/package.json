@@ -1,0 +1,34 @@
+
+{
+  "name": "starwise-backend",
+  "version": "1.0.0",
+  "description": "Backend API for StarWise - GitHub Stars organization with AI",
+  "main": "index.js",
+  "keywords": [
+    "api",
+    "express",
+    "github",
+    "oauth",
+    "ai",
+    "gemini"
+  ],
+  "author": "StarWise Contributors",
+  "license": "MIT",
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "scripts": {
+    "start": "node index.js",
+    "dev": "node index.js"
+  },
+  "dependencies": {
+    "@google/genai": "^0.14.0",
+    "axios": "^1.4.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "express-session": "^1.17.3",
+    "passport": "^0.6.0",
+    "passport-github2": "^0.1.12"
+  }
+}

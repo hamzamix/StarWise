@@ -1,130 +1,282 @@
-# StarWise
+# ⭐ StarWise
 
-Organize your GitHub Stars with AI-powered tagging using Google Gemini.
+<p align="center">
+  <img src="./logo.PNG" alt="StarWise Logo" width="120" height="120">
+</p>
 
-This project uses a standard two-server development setup:
--   **React Frontend:** A modern frontend built with Vite, running on its own dev server.
--   **Node.js Backend:** An Express server that handles API requests and GitHub authentication.
+<p align="center">
+  <strong>Organize your GitHub Stars with AI-powered tagging</strong>
+</p>
 
-## Features
+<p align="center">
+  Transform your scattered GitHub stars into an organized, searchable knowledge base using the power of Google Gemini AI.
+</p>
 
--   **GitHub Authentication:** Securely log in with your GitHub account.
--   **Sync Starred Repos:** Fetch and sync all your starred repositories from GitHub.
--   **AI-Powered Tagging:** Automatically generates relevant, technical tags for each repository using the Google Gemini API.
--   **Custom Lists:** Create custom lists to categorize and organize your starred repos.
--   **Filter & Search:** Easily filter repositories by list.
--   **Modern UI:** A sleek, responsive, dark-themed interface built with Material-UI.
+<p align="center">
+  <a href="#features">Features</a> •
+  <a href="#quick-start">Quick Start</a> •
+  <a href="#installation">Installation</a> •
+  <a href="#docker">Docker</a> •
+  <a href="#contributing">Contributing</a>
+</p>
 
-## Local Installation and Setup
+---
 
-Follow these steps to run StarWise on your local machine.
+## ✨ Features
+
+### 🤖 **AI-Powered Smart Tagging**
+- **Automatic Tag Generation:** Uses Google Gemini AI to analyze repository metadata and generate relevant, technical tags
+- **Background Processing:** Tag generation runs in the background with real-time progress tracking
+- **Rate Limit Handling:** Automatically detects and handles API rate limits with pause/resume functionality
+- **Progress Persistence:** Resume tagging from where you left off after any interruption
+
+### 📋 **Powerful Organization**
+- **Custom Lists:** Create and manage custom lists to categorize repositories
+- **Advanced Filtering:** Filter by language, repository type, tags, and more
+- **Smart Search:** Search across repository names, descriptions, and tags
+- **Bulk Operations:** Move repositories between lists and manage tags efficiently
+
+### 🔐 **Secure & Private**
+- **GitHub OAuth:** Secure authentication using your GitHub account
+- **Local Data Storage:** All your data stays on your machine
+- **API Key Security:** Environment-based configuration for API keys
+
+### 🎨 **Modern Interface**
+- **Dark/Light Theme:** Beautiful themes that adapt to your preference
+- **Responsive Design:** Works perfectly on desktop and mobile
+- **Material-UI Components:** Clean, modern interface built with Material-UI
+- **Real-time Updates:** Live progress tracking and instant feedback
+
+---
+
+## 🚀 Quick Start
+
+### Option 1: Docker (Recommended)
+
+1. **Clone the repository:**
+   ```bash
+   git clone https://github.com/yourusername/starwise.git
+   cd starwise
+   ```
+
+2. **Set up environment variables:**
+   ```bash
+   cp backend/.env.example backend/.env
+   # Edit backend/.env with your API keys (see setup guide below)
+   ```
+
+3. **Run with Docker:**
+   ```bash
+   docker-compose up --build
+   ```
+
+4. **Open your browser:**
+   Navigate to [http://localhost:4000](http://localhost:4000)
+
+### Option 2: Local Development
+
+1. **Install dependencies:**
+   ```bash
+   npm install
+   cd backend && npm install && cd ..
+   ```
+
+2. **Set up environment variables:**
+   ```bash
+   cp backend/.env.example backend/.env
+   # Edit backend/.env with your API keys
+   ```
+
+3. **Start the backend:**
+   ```bash
+   cd backend && npm start
+   ```
+
+4. **Start the frontend (new terminal):**
+   ```bash
+   npm run dev
+   ```
+
+5. **Open your browser:**
+   Navigate to [http://localhost:5173](http://localhost:5173)
+
+---
+
+## 🛠 Installation
 
 ### Prerequisites
 
--   [Node.js](https://nodejs.org/) (v18 or later recommended)
--   [npm](https://www.npmjs.com/) (comes with Node.js)
--   A [GitHub account](https://github.com/)
--   A [Google AI Studio API Key](https://aistudio.google.com/app/apikey)
+- [Node.js](https://nodejs.org/) (v18 or later)
+- [npm](https://www.npmjs.com/) or [yarn](https://yarnpkg.com/)
+- [Docker](https://www.docker.com/) (optional, for Docker setup)
+- [GitHub account](https://github.com/)
+- [Google AI Studio API Key](https://aistudio.google.com/app/apikey)
 
-### 1. Clone the Repository
+### 1. GitHub OAuth Setup
 
-First, clone this repository to your local machine.
+Create a GitHub OAuth application to enable authentication:
 
-```bash
-git clone <repository_url>
-cd <repository_directory>
+1. Go to **GitHub Settings** → **Developer settings** → **OAuth Apps**
+2. Click **New OAuth App**
+3. Fill in the details:
+   - **Application name:** StarWise
+   - **Homepage URL:** `http://localhost:5173` (development) or your domain
+   - **Authorization callback URL:** `http://localhost:4000/auth/github/callback`
+4. Save your **Client ID** and **Client Secret**
+
+### 2. Google AI API Setup
+
+1. Visit [Google AI Studio](https://aistudio.google.com/app/apikey)
+2. Create a new API key
+3. Save your API key securely
+
+### 3. Environment Configuration
+
+Create `backend/.env` with your credentials:
+
+```env
+# GitHub OAuth (from step 1)
+GITHUB_CLIENT_ID=your_github_client_id
+GITHUB_CLIENT_SECRET=your_github_client_secret
+GITHUB_CALLBACK_URL=http://localhost:4000/auth/github/callback
+
+# Google Gemini AI (from step 2)
+API_KEY=your_google_ai_api_key
+
+# Security
+SESSION_SECRET=generate_a_long_random_string_here
+
+# Server Configuration
+PORT=4000
 ```
 
-### 2. Set Up the GitHub OAuth App
+---
 
-StarWise uses GitHub for authentication. You need to create a GitHub OAuth application to get a client ID and secret.
+## 🐳 Docker
 
-1.  Go to your GitHub **Settings**.
-2.  Navigate to **Developer settings** > **OAuth Apps**.
-3.  Click **New OAuth App**.
-4.  Fill in the application details:
-    *   **Application name:** StarWise (or any name you prefer)
-    *   **Homepage URL:** `http://localhost:5173` (This is the default Vite port for the frontend)
-    *   **Authorization callback URL:** `http://localhost:4000/auth/github/callback` (This must point to your backend)
-5.  Click **Register application**.
-6.  On the next page, you will see your **Client ID**.
-7.  Click **Generate a new client secret**. Copy this secret immediately, as you won't be able to see it again.
+StarWise includes full Docker support for easy deployment with secure environment variable handling:
 
-### 3. Configure Backend Environment Variables
+### 🔒 Security Note
+For security, API keys are **never hardcoded** in the Docker Compose files. Instead, they're loaded from your local `.env` file or system environment variables.
 
-The backend needs several secret keys to run.
+### Development Deployment
 
-1.  Navigate to the `backend` directory:
-    ```bash
-    cd backend
-    ```
-2.  Create a new file named `.env`:
-    ```bash
-    touch .env
-    ```
-3.  Open the `.env` file and add the following variables, replacing the placeholders.
+1. **Ensure your `.env` file exists:**
+   ```bash
+   cp backend/.env.example backend/.env
+   # Edit backend/.env with your actual API keys
+   ```
 
-    ```env
-    # GitHub OAuth App Credentials (from Step 2)
-    GITHUB_CLIENT_ID=your_github_client_id
-    GITHUB_CLIENT_SECRET=your_github_client_secret
+2. **Run with Docker Compose:**
+   ```bash
+   docker-compose up --build
+   ```
+   This uses `env_file: backend/.env` to securely load your environment variables.
 
-    # Google Gemini API Key
-    # Get yours from https://aistudio.google.com/app/apikey
-    API_KEY=your_google_ai_api_key
+### Production Deployment
 
-    # A long random string for session security
-    SESSION_SECRET=a_long_random_string_for_session_security
-    ```
+For production, use environment variables from your deployment platform:
 
-### 4. Run the Application
+```bash
+# Set environment variables in your deployment platform (Heroku, DigitalOcean, etc.)
+export GITHUB_CLIENT_ID="your_actual_client_id"
+export GITHUB_CLIENT_SECRET="your_actual_secret"
+export API_KEY="your_actual_api_key"
+export SESSION_SECRET="your_secure_session_secret"
 
-You will need two terminals open to run both the backend and frontend servers.
+# Then deploy with production compose file
+docker-compose -f docker-compose.prod.yml up --build
+```
 
-**Terminal 1: Start the Backend**
+### Docker Files Explained
 
-1.  Navigate to the `backend` directory.
-    ```bash
-    cd backend
-    ```
-2.  Install dependencies.
-    ```bash
-    npm install
-    ```
-3.  Start the backend server.
-    ```bash
-    npm start
-    ```
-4.  You should see the message `Backend listening on http://localhost:4000`. Leave this terminal running.
+- **`docker-compose.yml`** - Development setup, loads from `backend/.env` file
+- **`docker-compose.prod.yml`** - Production setup, uses system environment variables
+- **`dockerfile`** - Multi-stage build with verification steps
 
-**Terminal 2: Start the Frontend**
+### Environment Variables Loading Order
 
-1.  Open a new terminal and navigate to the **root** project directory.
-2.  Install dependencies.
-    ```bash
-    npm install
-    ```
-3.  Start the frontend development server.
-    ```bash
-    npm run dev
-    ```
-4.  Vite will start the server and show you a URL, typically `http://localhost:5173`.
+1. **Development:** `backend/.env` file → Docker container
+2. **Production:** System environment variables → Docker container
+3. **Fallbacks:** Default values for non-sensitive settings (like PORT=4000)
 
-### 5. Open the App
+---
 
-Open your web browser and navigate to the frontend URL provided by Vite: **[http://localhost:5173](http://localhost:5173)**. The application should now be running correctly.
+## 🏗 Technology Stack
 
-## Running with Docker
+- **Frontend:** React 18 + TypeScript + Vite + Material-UI
+- **Backend:** Node.js + Express.js + Passport (GitHub OAuth)
+- **AI:** Google Gemini API
+- **Deployment:** Docker + Docker Compose
+- **Styling:** Material-UI with dark/light theme support
 
-You can also run the entire application in a single Docker container using Docker Compose.
+---
 
-1.  **Ensure Docker is installed** and running on your machine.
-2.  **Make sure you have configured `backend/.env`** as described in Step 3 of the local installation.
-3.  From the root directory of the project, run:
-    ```bash
-    docker-compose up --build
-    ```
-4.  This command will build the Docker image (which includes building the frontend and installing backend dependencies) and start the container.
-5.  Open your browser and navigate to **[http://localhost:4000](http://localhost:4000)**. The application should be running.
+## 📸 Screenshots
 
-To stop the application, press `Ctrl+C` in the terminal and then run `docker-compose down`.
+*Coming soon! We'll add beautiful screenshots of the interface here.*
+
+---
+
+## 🤝 Contributing
+
+We welcome contributions! StarWise is built with ❤️ for the developer community.
+
+### How to Contribute
+
+1. **Fork the repository**
+2. **Create a feature branch:** `git checkout -b feature/amazing-feature`
+3. **Make your changes**
+4. **Test thoroughly**
+5. **Commit:** `git commit -m 'Add amazing feature'`
+6. **Push:** `git push origin feature/amazing-feature`
+7. **Open a Pull Request**
+
+### Areas for Contribution
+
+- 🎨 UI/UX improvements
+- 🔧 Additional AI providers (OpenAI, Claude, etc.)
+- 📊 Analytics and insights features
+- 🔍 Enhanced search and filtering
+- 🌐 Internationalization
+- 📱 Mobile app development
+- 🧪 Testing improvements
+
+---
+
+## 📝 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+---
+
+## 💝 Support
+
+If StarWise helps you organize your GitHub stars, consider:
+
+- ⭐ **Starring this repository**
+- 🐛 **Reporting bugs** via [Issues](../../issues)
+- 💡 **Suggesting features** via [Discussions](../../discussions)
+- 🔗 **Sharing with fellow developers**
+
+---
+
+## 🎯 Roadmap
+
+- [ ] **Export/Import functionality**
+- [ ] **Collaboration features** (shared lists)
+- [ ] **Browser extension**
+- [ ] **Advanced analytics**
+- [ ] **Mobile app**
+- [ ] **Additional AI providers**
+- [ ] **Team/Organization support**
+
+---
+
+<p align="center">
+  Made with ❤️ for the GitHub community
+</p>
+
+<p align="center">
+  <a href="#top">↑ Back to top</a>
+</p>

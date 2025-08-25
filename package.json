@@ -1,0 +1,57 @@
+{
+  "name": "starwise",
+  "version": "1.0.0",
+  "description": "Organize your GitHub Stars with AI-powered tagging using Google Gemini",
+  "private": false,
+  "type": "module",
+  "keywords": [
+    "github",
+    "stars",
+    "ai",
+    "tagging",
+    "organization",
+    "gemini",
+    "react",
+    "typescript",
+    "material-ui"
+  ],
+  "author": "StarWise Contributors",
+  "license": "MIT",
+  "homepage": "https://github.com/yourusername/starwise#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/yourusername/starwise.git"
+  },
+  "bugs": {
+    "url": "https://github.com/yourusername/starwise/issues"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=8.0.0"
+  },
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "start": "vite build && vite preview",
+    "docker:build": "docker-compose build",
+    "docker:up": "docker-compose up",
+    "docker:dev": "docker-compose up --build"
+  },
+  "dependencies": {
+    "@emotion/react": "^11.11.4",
+    "@emotion/styled": "^11.11.5",
+    "@mui/icons-material": "^5.15.15",
+    "@mui/material": "^5.15.15",
+    "axios": "^1.6.8",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  },
+  "devDependencies": {
+    "@types/react": "^18.2.66",
+    "@types/react-dom": "^18.2.22",
+    "@vitejs/plugin-react": "^4.2.1",
+    "typescript": "^5.2.2",
+    "vite": "^5.2.0"
+  }
+}
