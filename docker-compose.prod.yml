@@ -3,7 +3,7 @@ services:
     build: .
     container_name: starwise_app
     ports:
-      - "4000:4000"
+      - "4053:4000"
     volumes:
       - starwise_db:/app/backend
     restart: unless-stopped
@@ -19,3 +19,4 @@ services:
 volumes:
 
   starwise_db:
+
