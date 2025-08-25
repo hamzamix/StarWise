@@ -1,5 +1,0 @@
-{
-  "name": "Starwise",
-  "description": "An application to help you manage and categorize your GitHub starred repositories using the power of AI. Log in with GitHub, sync your stars, and let Gemini suggest relevant tags to keep your collection organized.",
-  "requestFramePermissions": []
-}
