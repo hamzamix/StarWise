@@ -31,7 +31,8 @@ import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 
 
-const API_BASE_URL = 'http://localhost:4000';
+// Dynamic API URL that adapts to the current host and port
+const API_BASE_URL = `${window.location.protocol}//${window.location.host}`;
 axios.defaults.withCredentials = true;
 
 
