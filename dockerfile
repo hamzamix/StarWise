@@ -30,8 +30,8 @@ RUN npm install --production
 # Ensure we get the latest backend/index.js with background AI processing
 COPY backend/ .
 
-# Verify the backend files were copied correctly
-RUN ls -la index.js && wc -l index.js
+# Verify the backend files were copied correctly and check OAuth redirect URLs
+RUN ls -la index.js && wc -l index.js && grep -n "http://localhost:4000" index.js
 
 # Expose the port the app runs on
 EXPOSE 4000
