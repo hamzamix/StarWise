@@ -6,7 +6,7 @@ services:
     container_name: starwise_app
     ports:
       # Maps port 4000 on your host machine to port 4000 in the container.
-      - "4000:4000"
+      - "4053:4000"
     volumes:
       # This creates a persistent, named volume called 'starwise_db'.
       # It mounts this volume to the /app/backend directory inside the container.
@@ -22,4 +22,5 @@ services:
 
 # Defines the named volume used for data persistence.
 volumes:
+
   starwise_db:
