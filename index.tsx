@@ -1,5 +1,3 @@
-
-
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { createRoot } from 'react-dom/client';
 import axios from 'axios';
@@ -126,6 +124,11 @@ const GlobalAppStyles = () => (
         '*::-webkit-scrollbar-track': { background: theme.palette.background.default },
         '*::-webkit-scrollbar-thumb': { background: theme.palette.divider, borderRadius: '4px' },
         '*::-webkit-scrollbar-thumb:hover': { background: theme.palette.text.secondary },
+        '@keyframes pulse': {
+          '0%': { opacity: 1 },
+          '50%': { opacity: 0.5 },
+          '100%': { opacity: 1 }
+        }
     })} />
 );
 
@@ -152,13 +155,19 @@ const filterButtonStyle = (theme) => ({
   },
 });
 
-function RepoFilters({ filters, onFiltersChange, languages }) {
+function RepoFilters({ filters, onFiltersChange, languages, onForceSync }) {
   const [typeAnchor, setTypeAnchor] = useState(null);
   const [langAnchor, setLangAnchor] = useState(null);
   const [sortAnchor, setSortAnchor] = useState(null);
 
-  const handleFilterChange = (key, value) => {
+  const handleFilterChange = async (key, value) => {
     onFiltersChange(prev => ({ ...prev, [key]: value }));
+    
+    // Force sync when selecting "recently-active" to get latest repository data
+    if (key === 'sort' && value === 'recently-active' && onForceSync) {
+      await onForceSync();
+    }
+    
     setTypeAnchor(null);
     setLangAnchor(null);
     setSortAnchor(null);
@@ -477,7 +486,7 @@ function RepoCard({ repo, lists, onMoveRepo, onAddTag, onDeleteTag, onSuggestTag
 
 // --- Pages ---
 
-function HomePage({ dataVersion }) {
+function HomePage({ dataVersion, onForceSync }) {
   const [repos, setRepos] = useState([]);
   const [lists, setLists] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -653,7 +662,7 @@ function HomePage({ dataVersion }) {
             },
           })}
         />
-        <RepoFilters filters={filters} onFiltersChange={setFilters} languages={languages} />
+        <RepoFilters filters={filters} onFiltersChange={setFilters} languages={languages} onForceSync={onForceSync} />
       </Box>
 
       {loading && <Box sx={{ display: 'flex', justifyContent: 'center', mt: 8 }}><CircularProgress /></Box>}
@@ -678,7 +687,7 @@ function HomePage({ dataVersion }) {
   );
 }
 
-function ListsPage({ dataVersion }) {
+function ListsPage({ dataVersion, onForceSync }) {
     const [lists, setLists] = useState([]);
     const [selectedListId, setSelectedListId] = useState(null);
     const [repos, setRepos] = useState([]);
@@ -1002,7 +1011,7 @@ function ListsPage({ dataVersion }) {
                                   },
                               })}
                           />
-                          <RepoFilters filters={filters} onFiltersChange={setFilters} languages={languages} />
+                          <RepoFilters filters={filters} onFiltersChange={setFilters} languages={languages} onForceSync={onForceSync} />
                         </Box>
                       </>
                   ) : <Typography variant="h5" color="text.secondary" sx={{textAlign: 'center', mt: 8}}>Select a list to view its repositories</Typography>}
@@ -1115,12 +1124,41 @@ function App({ toggleTheme, mode }) {
   const [page, setPage] = useState('home'); // 'home' or 'lists'
   const [dataVersion, setDataVersion] = useState(0);
   
+  // Version management state
+  const [currentVersion] = useState('1.0.0');
+  const [hasUpdate, setHasUpdate] = useState(false);
+  const [latestVersion, setLatestVersion] = useState(null);
+  
   const [taggingStatus, setTaggingStatus] = useState({
     status: 'idle', // 'idle', 'running', 'paused', 'complete', 'error'
     progress: 0,
     total: 0,
     message: ''
   });
+
+  // Check for updates on app load
+  useEffect(() => {
+    const checkForUpdates = async () => {
+      try {
+        // Check for latest releases from the StarWise repository
+        const response = await fetch('https://api.github.com/repos/yourusername/StarWise/releases/latest');
+        if (response.ok) {
+          const release = await response.json();
+          const latestVer = release.tag_name.replace('v', '');
+          setLatestVersion(latestVer);
+          
+          // Simple version comparison (assumes semantic versioning)
+          if (latestVer !== currentVersion) {
+            setHasUpdate(true);
+          }
+        }
+      } catch (error) {
+        console.log('Could not check for updates:', error);
+      }
+    };
+    
+    checkForUpdates();
+  }, [currentVersion]);
 
   // Polling for AI tag generation status
   useEffect(() => {
@@ -1173,6 +1211,11 @@ function App({ toggleTheme, mode }) {
         console.error("Logout failed", error);
         alert('Logout failed.');
     }
+  };
+
+  const handleVersionClick = () => {
+    // Open the StarWise releases page
+    window.open('https://github.com/yourusername/StarWise/releases', '_blank');
   };
 
   const fetchStarsAndTags = async () => {
@@ -1260,6 +1303,39 @@ function App({ toggleTheme, mode }) {
           <Stack direction="row" spacing={1} alignItems="center" sx={{ flexGrow: 1 }}>
             <img src="/logo.png" alt="Starwise Logo" style={{ width: 28, height: 28 }} />
             <Typography variant="h6" component="div" sx={{ fontWeight: 700 }}>Starwise</Typography>
+            
+            {/* Version Display with Update Notification */}
+            <Box sx={{ position: 'relative' }}>
+              <Chip 
+                label={`v${currentVersion}`} 
+                size="small" 
+                variant="outlined"
+                onClick={handleVersionClick}
+                sx={{ 
+                  cursor: 'pointer',
+                  fontSize: '0.7rem',
+                  height: 20,
+                  '&:hover': {
+                    backgroundColor: 'action.hover'
+                  }
+                }}
+              />
+              {hasUpdate && (
+                <Box
+                  sx={{
+                    position: 'absolute',
+                    top: -2,
+                    right: -2,
+                    width: 8,
+                    height: 8,
+                    backgroundColor: 'error.main',
+                    borderRadius: '50%',
+                    animation: 'pulse 2s infinite'
+                  }}
+                />
+              )}
+            </Box>
+            
             <Button color={page === 'home' ? 'primary' : 'inherit'} onClick={() => setPage('home')}>Home</Button>
             <Button color={page === 'lists' ? 'primary' : 'inherit'} onClick={() => setPage('lists')}>Lists</Button>
           </Stack>
@@ -1287,8 +1363,8 @@ function App({ toggleTheme, mode }) {
       </AppBar>
       <Toolbar />
       <main>
-        {page === 'home' && <HomePage dataVersion={dataVersion} />}
-        {page === 'lists' && <ListsPage dataVersion={dataVersion} />}
+        {page === 'home' && <HomePage dataVersion={dataVersion} onForceSync={fetchStarsAndTags} />}
+        {page === 'lists' && <ListsPage dataVersion={dataVersion} onForceSync={fetchStarsAndTags} />}
       </main>
     </>
   );
