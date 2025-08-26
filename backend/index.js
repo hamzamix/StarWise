@@ -70,7 +70,7 @@ const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
 
 // Middleware
 app.use(cors({
-  origin: ['http://localhost:5173', 'http://127.0.0.1:5173', 'http://localhost:3000'],
+  origin: true,
   credentials: true,
 }));
 app.use(express.json());
@@ -104,9 +104,12 @@ passport.deserializeUser(function(obj, done) {
 app.get('/auth/github', passport.authenticate('github', { scope: ['user:email', 'read:user', 'repo', 'write:repo'] }));
 
 app.get('/auth/github/callback',
-  passport.authenticate('github', { failureRedirect: 'http://localhost:5173/login-failed' }),
+  passport.authenticate('github', { failureRedirect: '/?login=failed' }),
   function(req, res) {
-    res.redirect('http://localhost:5173');
+    // Dynamic redirect to the same host that made the request
+    const protocol = req.get('x-forwarded-proto') || req.protocol;
+    const host = req.get('host');
+    res.redirect(`${protocol}://${host}/`);
   });
 
 app.get('/auth/logout', (req, res, next) => {
