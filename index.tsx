@@ -1303,7 +1303,11 @@ function App({ toggleTheme, mode }) {
           <Stack direction="row" spacing={1} alignItems="center" sx={{ flexGrow: 1 }}>
             <img src="/logo.png" alt="Starwise Logo" style={{ width: 28, height: 28 }} />
             <Typography variant="h6" component="div" sx={{ fontWeight: 700 }}>Starwise</Typography>
-            
+            <Button color={page === 'home' ? 'primary' : 'inherit'} onClick={() => setPage('home')}>Home</Button>
+            <Button color={page === 'lists' ? 'primary' : 'inherit'} onClick={() => setPage('lists')}>Lists</Button>
+          </Stack>
+
+          <Stack direction="row" spacing={2} alignItems="center">
             {/* Version Display with Update Notification */}
             <Box sx={{ position: 'relative' }}>
               <Chip 
@@ -1335,12 +1339,6 @@ function App({ toggleTheme, mode }) {
                 />
               )}
             </Box>
-            
-            <Button color={page === 'home' ? 'primary' : 'inherit'} onClick={() => setPage('home')}>Home</Button>
-            <Button color={page === 'lists' ? 'primary' : 'inherit'} onClick={() => setPage('lists')}>Lists</Button>
-          </Stack>
-
-          <Stack direction="row" spacing={2} alignItems="center">
             <Button 
                 variant="contained" 
                 size="small" 
