@@ -2,7 +2,7 @@ services:
   starwise:
     # This tells Docker Compose to build the image from the Dockerfile
     # in the current directory.
-    build: .
+    image: hamzamix/starwise:latest
     container_name: starwise_app
     ports:
       # Maps port 4000 on your host machine to port 4000 in the container.
@@ -24,3 +24,4 @@ services:
 volumes:
 
   starwise_db:
+
