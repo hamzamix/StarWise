@@ -1,7 +1,7 @@
 services:
   starwise:
-    build: .
-    container_name: starwise_app
+    image: hamzamix/starwise:latest
+    container_name: starwise
     ports:
       - "4053:4000"
     volumes:
@@ -19,6 +19,7 @@ services:
 volumes:
 
   starwise_db:
+
 
 
 
