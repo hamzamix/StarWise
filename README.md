@@ -51,6 +51,19 @@
 
 ---
 
+## 📸 Screenshots
+
+**home without tags**
+![Roadmapper logo](https://raw.githubusercontent.com/hamzamix/StarWise/refs/heads/main/Screenshots/home.png)
+
+**home with tags**
+![Roadmapper logo](https://raw.githubusercontent.com/hamzamix/StarWise/refs/heads/main/Screenshots/hometags.png)
+
+**lists**
+![Roadmapper logo](https://raw.githubusercontent.com/hamzamix/StarWise/refs/heads/main/Screenshots/lists.png)
+
+---
+
 ## 🚀 Quick Start
 
 ### Option 1: Docker (Recommended)
@@ -238,19 +251,6 @@ docker-compose -f docker-compose.prod.yml up --build
 - **AI:** Google Gemini API
 - **Deployment:** Docker + Docker Compose
 - **Styling:** Material-UI with dark/light theme support
-
----
-
-## 📸 Screenshots
-
-**home without tags**
-![Roadmapper logo](https://raw.githubusercontent.com/hamzamix/StarWise/refs/heads/main/Screenshots/home.png)
-
-**home with tags**
-![Roadmapper logo](https://raw.githubusercontent.com/hamzamix/StarWise/refs/heads/main/Screenshots/hometags.png)
-
-**lists**
-![Roadmapper logo](https://raw.githubusercontent.com/hamzamix/StarWise/refs/heads/main/Screenshots/lists.png)
 
 ---
 
