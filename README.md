@@ -35,6 +35,7 @@
 - **Advanced Filtering:** Filter by language, repository type, tags, and more
 - **Smart Search:** Search across repository names, descriptions, and tags
 - **Bulk Operations:** Move repositories between lists and manage tags efficiently
+- **Force Sync:** Automatic sync when selecting "Recently Active" filter for up-to-date data
 
 ### 🔐 **Secure & Private**
 - **GitHub OAuth:** Secure authentication using your GitHub account
@@ -46,6 +47,7 @@
 - **Responsive Design:** Works perfectly on desktop and mobile
 - **Material-UI Components:** Clean, modern interface built with Material-UI
 - **Real-time Updates:** Live progress tracking and instant feedback
+- **Version Management:** Built-in version display with update notifications
 
 ---
 
@@ -116,13 +118,26 @@
 
 Create a GitHub OAuth application to enable authentication:
 
+#### For Local Development
 1. Go to **GitHub Settings** → **Developer settings** → **OAuth Apps**
 2. Click **New OAuth App**
 3. Fill in the details:
-   - **Application name:** StarWise
-   - **Homepage URL:** `http://localhost:5173` (development) or your domain
+   - **Application name:** StarWise (Development)
+   - **Homepage URL:** `http://localhost:5173`
    - **Authorization callback URL:** `http://localhost:4000/auth/github/callback`
 4. Save your **Client ID** and **Client Secret**
+
+#### For Docker Deployment
+1. Create another OAuth App (or update the existing one):
+   - **Application name:** StarWise (Docker)
+   - **Homepage URL:** `http://localhost:4000` ⚠️ **Important: Use port 4000 for Docker**
+   - **Authorization callback URL:** `http://localhost:4000/auth/github/callback`
+2. Use the same **Client ID** and **Client Secret** in your `.env` file
+
+> **💡 Port Explanation:**
+> - **Local Development:** Frontend runs on port `5173`, backend on port `4000`
+> - **Docker Deployment:** Both frontend and backend run on port `4000` in a single container
+> - **OAuth Setup:** Always use port `4000` for the callback URL, but Homepage URL differs based on deployment method
 
 ### 2. Google AI API Setup
 
@@ -156,6 +171,13 @@ PORT=4000
 
 StarWise includes full Docker support for easy deployment with secure environment variable handling:
 
+### 📊 Port Configuration Summary
+
+| Deployment Method | Frontend Port | Backend Port | Access URL | GitHub OAuth Homepage URL |
+|-------------------|---------------|--------------|------------|---------------------------|
+| **Local Development** | `5173` | `4000` | `http://localhost:5173` | `http://localhost:5173` |
+| **Docker** | `4000` | `4000` | `http://localhost:4000` | `http://localhost:4000` |
+
 ### 🔒 Security Note
 For security, API keys are **never hardcoded** in the Docker Compose files. Instead, they're loaded from your local `.env` file or system environment variables.
 
@@ -167,11 +189,18 @@ For security, API keys are **never hardcoded** in the Docker Compose files. Inst
    # Edit backend/.env with your actual API keys
    ```
 
-2. **Run with Docker Compose:**
+2. **Update GitHub OAuth App:**
+   - Set **Homepage URL** to `http://localhost:4000`
+   - Keep **Callback URL** as `http://localhost:4000/auth/github/callback`
+
+3. **Run with Docker Compose:**
    ```bash
    docker-compose up --build
    ```
    This uses `env_file: backend/.env` to securely load your environment variables.
+
+4. **Access the application:**
+   Navigate to [http://localhost:4000](http://localhost:4000)
 
 ### Production Deployment
 
@@ -264,6 +293,7 @@ If StarWise helps you organize your GitHub stars, consider:
 ## 🎯 Roadmap
 
 - [ ] **Export/Import functionality**
+- [ ] **Backup repositories feature**
 - [ ] **Collaboration features** (shared lists)
 - [ ] **Browser extension**
 - [ ] **Advanced analytics**
