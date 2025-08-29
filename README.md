@@ -247,7 +247,7 @@ docker-compose -f docker-compose.prod.yml up --build
 ![Roadmapper logo](https://raw.githubusercontent.com/hamzamix/StarWise/refs/heads/main/Screenshots/home.png)
 
 **home with tags**
-![Roadmapper logo](https://raw.githubusercontent.com/hamzamix/StarWise/refs/heads/main/Screenshots/hometag.png)
+![Roadmapper logo](https://raw.githubusercontent.com/hamzamix/StarWise/refs/heads/main/Screenshots/hometags.png)
 
 **lists**
 ![Roadmapper logo](https://raw.githubusercontent.com/hamzamix/StarWise/refs/heads/main/Screenshots/lists.png)
