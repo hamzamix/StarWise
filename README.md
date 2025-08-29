@@ -243,7 +243,14 @@ docker-compose -f docker-compose.prod.yml up --build
 
 ## 📸 Screenshots
 
-*Coming soon! We'll add beautiful screenshots of the interface here.*
+**home without tags**
+![Roadmapper logo](https://raw.githubusercontent.com/hamzamix/StarWise/refs/heads/main/Screenshots/home.png)
+
+**home with tags**
+![Roadmapper logo](https://raw.githubusercontent.com/hamzamix/StarWise/refs/heads/main/Screenshots/hometag.png)
+
+**lists**
+![Roadmapper logo](https://raw.githubusercontent.com/hamzamix/StarWise/refs/heads/main/Screenshots/lists.png)
 
 ---
 
