@@ -301,6 +301,7 @@ If StarWise helps you organize your GitHub stars, consider:
 
 - [ ] **Export/Import functionality**
 - [ ] **Backup repositories feature**
+- [ ] **Sync GitHub Lists** - Import and sync GitHub's native starred repository lists
 - [ ] **Collaboration features** (shared lists)
 - [ ] **Browser extension**
 - [ ] **Advanced analytics**
