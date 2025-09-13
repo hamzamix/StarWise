@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import { createRoot } from 'react-dom/client';
 import axios from 'axios';
 
@@ -160,17 +160,20 @@ function RepoFilters({ filters, onFiltersChange, languages, onForceSync }) {
   const [langAnchor, setLangAnchor] = useState(null);
   const [sortAnchor, setSortAnchor] = useState(null);
 
-  const handleFilterChange = async (key, value) => {
-    onFiltersChange(prev => ({ ...prev, [key]: value }));
-    
-    // Force sync when selecting "recently-active" to get latest repository data
-    if (key === 'sort' && value === 'recently-active' && onForceSync) {
-      await onForceSync();
-    }
-    
+  const handleFilterChange = (key, value) => {
+    // Close all menus first
     setTypeAnchor(null);
     setLangAnchor(null);
     setSortAnchor(null);
+
+    // Update filters immediately
+    onFiltersChange(prev => ({ ...prev, [key]: value }));
+
+    // Force sync when selecting "recently-active" to get latest repository data
+    if (key === 'sort' && value === 'recently-active' && onForceSync) {
+      // Fire and await sync so backend data is fresh
+      Promise.resolve(onForceSync()).catch(err => console.error('Force sync failed', err));
+    }
   };
   
   const sortOptions = {
@@ -493,11 +496,28 @@ function HomePage({ dataVersion, onForceSync }) {
   const [error, setError] = useState('');
   const [searchInput, setSearchInput] = useState('');
   const [debouncedSearch, setDebouncedSearch] = useState('');
-  const [filters, setFilters] = useState({ type: 'all', language: 'all', sort: 'recently-starred' });
+  
+  // Initialize filters from localStorage or default
+  const [filters, setFilters] = useState(() => {
+    try {
+      const saved = localStorage.getItem('starwise-filters');
+      return saved ? JSON.parse(saved) : { type: 'all', language: 'all', sort: 'recently-starred' };
+    } catch {
+      return { type: 'all', language: 'all', sort: 'recently-starred' };
+    }
+  });
+  
   const [languages, setLanguages] = useState([]);
+  const filtersRef = useRef(filters);
 
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
+
+  // Update filtersRef and save to localStorage whenever filters change
+  useEffect(() => {
+    filtersRef.current = filters;
+    localStorage.setItem('starwise-filters', JSON.stringify(filters));
+  }, [filters]);
 
   useEffect(() => {
     const fetchLanguages = async () => {
@@ -557,7 +577,14 @@ function HomePage({ dataVersion, onForceSync }) {
   
   useEffect(() => {
     fetchRepos(1, debouncedSearch, filters);
-  }, [debouncedSearch, filters, fetchRepos, dataVersion]);
+  }, [debouncedSearch, filters, fetchRepos]);
+
+  // Refetch when dataVersion changes (e.g., after a sync) to ensure fresh data
+  useEffect(() => {
+    if (dataVersion > 0) {
+      fetchRepos(1, debouncedSearch, filters);
+    }
+  }, [dataVersion, debouncedSearch, filters, fetchRepos]);
 
   const updateRepoInState = (updatedRepo) => {
     setRepos(currentRepos => currentRepos.map(r => r.id === updatedRepo.id ? updatedRepo : r));
@@ -1141,7 +1168,7 @@ function App({ toggleTheme, mode }) {
     const checkForUpdates = async () => {
       try {
         // Check for latest releases from the StarWise repository
-        const response = await fetch('https://api.github.com/repos/yourusername/StarWise/releases/latest');
+        const response = await fetch('https://api.github.com/repos/hamzamix/StarWise/releases/latest');
         if (response.ok) {
           const release = await response.json();
           const latestVer = release.tag_name.replace('v', '');
@@ -1164,7 +1191,7 @@ function App({ toggleTheme, mode }) {
   useEffect(() => {
     const interval = setInterval(async () => {
         // Only poll if we're logged in and a job might be active
-        if (user && (taggingStatus.status === 'running' || taggingStatus.status === 'idle')) {
+        if (user && (taggingStatus.status === 'running' || taggingStatus.status === 'paused')) {
             try {
                 const res = await axios.get(`${API_BASE_URL}/api/ai/tag-generation-status`);
                 const newStatus = res.data;
@@ -1174,12 +1201,11 @@ function App({ toggleTheme, mode }) {
                     setDataVersion(v => v + 1);
                 }
 
-                // If the job completes, do a final refresh and reset the button after a delay
+                // If the job completes, do a final refresh and show completion
                 if (newStatus.status === 'complete') {
                     setDataVersion(v => v + 1);
-                    setTimeout(() => {
-                        setTaggingStatus({ status: 'idle', progress: 0, total: 0, message: '' });
-                    }, 5000); // Reset button after 5 seconds
+                    // Keep the 'complete' status to show "Tags Generated!" permanently
+                    // Until user clicks the button again
                 }
                 
                 setTaggingStatus(newStatus);
@@ -1214,8 +1240,11 @@ function App({ toggleTheme, mode }) {
   };
 
   const handleVersionClick = () => {
-    // Open the StarWise releases page
-    window.open('https://github.com/yourusername/StarWise/releases', '_blank');
+    // Open the specific release page for either the latest available or current version
+    const ownerRepo = 'hamzamix/StarWise';
+    const versionToOpen = hasUpdate && latestVersion ? latestVersion : currentVersion;
+    const url = `https://github.com/${ownerRepo}/releases/tag/v${versionToOpen}`;
+    window.open(url, '_blank');
   };
 
   const fetchStarsAndTags = async () => {
@@ -1236,6 +1265,11 @@ function App({ toggleTheme, mode }) {
   };
 
   const startGenerateAllAiTags = async () => {
+    // If status is complete, reset to idle first
+    if (taggingStatus.status === 'complete') {
+      setTaggingStatus({ status: 'idle', progress: 0, total: 0, message: '' });
+    }
+    
     try {
         await axios.post(`${API_BASE_URL}/api/ai/start-generate-all-tags`);
         // Immediately update status to kick off polling, backend will provide the real numbers
@@ -1253,7 +1287,7 @@ function App({ toggleTheme, mode }) {
           case 'paused':
               return 'Paused - Resume';
           case 'complete':
-              return 'Tags Generated!';
+              return 'Tags Generated! Click to Regenerate';
           case 'error':
               return 'Error - Retry';
           default:
@@ -1310,20 +1344,22 @@ function App({ toggleTheme, mode }) {
           <Stack direction="row" spacing={2} alignItems="center">
             {/* Version Display with Update Notification */}
             <Box sx={{ position: 'relative' }}>
-              <Chip 
-                label={`v${currentVersion}`} 
-                size="small" 
-                variant="outlined"
-                onClick={handleVersionClick}
-                sx={{ 
-                  cursor: 'pointer',
-                  fontSize: '0.7rem',
-                  height: 20,
-                  '&:hover': {
-                    backgroundColor: 'action.hover'
-                  }
-                }}
-              />
+              <Tooltip title={hasUpdate && latestVersion ? `Update available: v${latestVersion}` : `App version: v${currentVersion}`}>
+                <Chip 
+                  label={`v${hasUpdate && latestVersion ? latestVersion : currentVersion}`} 
+                  size="small" 
+                  variant="outlined"
+                  onClick={handleVersionClick}
+                  sx={{ 
+                    cursor: 'pointer',
+                    fontSize: '0.7rem',
+                    height: 20,
+                    '&:hover': {
+                      backgroundColor: 'action.hover'
+                    }
+                  }}
+                />
+              </Tooltip>
               {hasUpdate && (
                 <Box
                   sx={{
@@ -1343,7 +1379,7 @@ function App({ toggleTheme, mode }) {
                 variant="contained" 
                 size="small" 
                 onClick={startGenerateAllAiTags} 
-                disabled={taggingStatus.status === 'running'}
+                disabled={taggingStatus.status === 'running' || taggingStatus.status === 'paused'}
                 startIcon={taggingStatus.status === 'running' ? <CircularProgress color="inherit" size={16}/> : <AutoAwesomeIcon />}
             >
                 {renderTagButtonContent()}
