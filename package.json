@@ -1,6 +1,6 @@
 {
   "name": "starwise",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Organize your GitHub Stars with AI-powered tagging using Google Gemini",
   "private": false,
   "type": "module",
