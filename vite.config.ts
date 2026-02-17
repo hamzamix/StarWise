@@ -1,29 +1,31 @@
 import path from 'path';
 import { defineConfig, loadEnv } from 'vite';
+import packageJson from './package.json';
 
 export default defineConfig(({ mode }) => {
-    const env = loadEnv(mode, '.', '');
-    return {
-      server: {
-        proxy: {
-          '/api': {
-            target: 'http://localhost:4000',
-            changeOrigin: true,
-          },
-          '/auth': {
-            target: 'http://localhost:4000',
-            changeOrigin: true,
-          },
+  const env = loadEnv(mode, '.', '');
+  return {
+    server: {
+      proxy: {
+        '/api': {
+          target: 'http://localhost:4000',
+          changeOrigin: true,
+        },
+        '/auth': {
+          target: 'http://localhost:4000',
+          changeOrigin: true,
         },
       },
-      define: {
-        'process.env.API_KEY': JSON.stringify(env.GEMINI_API_KEY),
-        'process.env.GEMINI_API_KEY': JSON.stringify(env.GEMINI_API_KEY)
-      },
-      resolve: {
-        alias: {
-          '@': path.resolve(__dirname, '.'),
-        }
+    },
+    define: {
+      'process.env.API_KEY': JSON.stringify(env.GEMINI_API_KEY),
+      'process.env.GEMINI_API_KEY': JSON.stringify(env.GEMINI_API_KEY),
+      __APP_VERSION__: JSON.stringify(packageJson.version)
+    },
+    resolve: {
+      alias: {
+        '@': path.resolve(__dirname, '.'),
       }
-    };
+    }
+  };
 });

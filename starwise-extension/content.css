@@ -1,0 +1,94 @@
+/* StarWise Lists Importer - Content Script Styles */
+
+.starwise-import-btn {
+  position: relative;
+  z-index: 1000;
+}
+
+.starwise-import-btn:hover {
+  transform: translateY(-1px) !important;
+  box-shadow: 0 4px 12px rgba(25, 118, 210, 0.4) !important;
+}
+
+.starwise-import-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none !important;
+}
+
+/* Notification styles */
+.starwise-notification {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  background: white;
+  border: 1px solid #e1e5e9;
+  border-radius: 6px;
+  padding: 12px 16px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  z-index: 10000;
+  max-width: 300px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-size: 14px;
+}
+
+.starwise-notification.success {
+  border-color: #10b981;
+  background: #f0fdf4;
+  color: #065f46;
+}
+
+.starwise-notification.error {
+  border-color: #ef4444;
+  background: #fef2f2;
+  color: #991b1b;
+}
+
+.starwise-notification.info {
+  border-color: #3b82f6;
+  background: #eff6ff;
+  color: #1e40af;
+}
+
+.starwise-notification.fade-out {
+  animation: fadeOut 0.3s ease-out forwards;
+}
+
+@keyframes fadeOut {
+  to {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+}
+
+/* Loading spinner animation */
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.starwise-spinner {
+  animation: spin 1s linear infinite;
+  display: inline-block;
+  margin-right: 8px;
+}
+
+/* GitHub-specific overrides */
+.application-main header .starwise-import-btn {
+  margin-left: 12px;
+  vertical-align: middle;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .starwise-import-btn {
+    padding: 4px 8px !important;
+    font-size: 11px !important;
+  }
+
+  .starwise-notification {
+    left: 10px;
+    right: 10px;
+    max-width: none;
+  }
+}

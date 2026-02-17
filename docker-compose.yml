@@ -1,28 +1,20 @@
 services:
   starwise:
-    # This tells Docker Compose to build the image from the Dockerfile
-    # in the current directory.
-    image: hamzamix/starwise:latest
-    container_name: starwise
+    build: .
+    image: hamzamix/starwise:1.2.0
+    container_name: starwise_app
     ports:
-      # Maps port 4000 on your host machine to port 4000 in the container.
-      - "4053:4000"
+      - "4000:4000"
     volumes:
-      # This creates a persistent, named volume called 'starwise_db'.
-      # It mounts this volume to the /app/backend directory inside the container.
-      # This ensures that your db.json file is saved even if the container is removed or restarted.
-      - starwise_db:/app/backend
+      # Persist database in a data directory
+      - starwise_db:/data
+      # NOTE: Removed legacy mount for /app/backend - it was overwriting the backend code!
+      - ./backup:/app/backup
     restart: unless-stopped
-    # Load environment variables from backend/.env file
     env_file:
       - backend/.env
-    # Override specific variables if needed
     environment:
       - PORT=4000
 
-# Defines the named volume used for data persistence.
 volumes:
-
   starwise_db:
-
-

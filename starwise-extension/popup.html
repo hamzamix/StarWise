@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      width: 320px;
+      padding: 20px;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      margin: 0;
+    }
+    .header {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    .logo {
+      width: 32px;
+      height: 32px;
+      margin-bottom: 8px;
+    }
+    .status {
+      padding: 12px;
+      border-radius: 8px;
+      margin-bottom: 15px;
+      font-size: 13px;
+      border: 1px solid;
+    }
+    .status.connected {
+      background: #d1fae5;
+      color: #065f46;
+      border-color: #a7f3d0;
+    }
+    .status.disconnected {
+      background: #fee2e2;
+      color: #991b1b;
+      border-color: #fecaca;
+    }
+    .button {
+      width: 100%;
+      padding: 12px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 500;
+      transition: all 0.2s ease;
+      margin-bottom: 8px;
+    }
+    .button.primary {
+      background: #1976d2;
+      color: white;
+    }
+    .button.primary:hover:not(:disabled) {
+      background: #1565c0;
+      transform: translateY(-1px);
+    }
+    .button.primary:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+      transform: none;
+    }
+    .button.secondary {
+      background: #f8f9fa;
+      color: #495057;
+      border: 1px solid #dee2e6;
+    }
+    .button.secondary:hover:not(:disabled) {
+      background: #e9ecef;
+    }
+    .button.refresh {
+      background: transparent;
+      color: #1976d2;
+      border: 1px solid #1976d2;
+      padding: 8px;
+      font-size: 12px;
+    }
+    .stats {
+      margin: 15px 0;
+      padding: 12px;
+      background: #f8f9fa;
+      border-radius: 6px;
+      border: 1px solid #e9ecef;
+    }
+    .stats-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 10px;
+      text-align: center;
+    }
+    .stat-item {
+      display: flex;
+      flex-direction: column;
+    }
+    .stat-number {
+      font-size: 18px;
+      font-weight: bold;
+      color: #1976d2;
+    }
+    .stat-label {
+      font-size: 11px;
+      color: #666;
+      margin-top: 2px;
+    }
+    .progress {
+      margin: 15px 0;
+    }
+    .progress-bar {
+      width: 100%;
+      height: 6px;
+      background: #e9ecef;
+      border-radius: 3px;
+      overflow: hidden;
+    }
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #1976d2, #42a5f5);
+      transition: width 0.3s ease;
+    }
+    .message {
+      margin: 10px 0;
+      padding: 8px;
+      border-radius: 4px;
+      font-size: 12px;
+      line-height: 1.4;
+    }
+    .message.error {
+      background: #fef2f2;
+      color: #dc2626;
+      border: 1px solid #fecaca;
+    }
+    .message.success {
+      background: #f0fdf4;
+      color: #16a34a;
+      border: 1px solid #bbf7d0;
+    }
+    .message.warning {
+      background: #fffbeb;
+      color: #d97706;
+      border: 1px solid #fed7aa;
+    }
+    .message.info {
+      background: #eff6ff;
+      color: #2563eb;
+      border: 1px solid #bfdbfe;
+    }
+    .button-row {
+      display: flex;
+      gap: 8px;
+      margin-top: 10px;
+    }
+    .button-row .button {
+      flex: 1;
+      margin-bottom: 0;
+    }
+    .spinner {
+      display: inline-block;
+      width: 12px;
+      height: 12px;
+      border: 2px solid #f3f3f3;
+      border-top: 2px solid #1976d2;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin-right: 6px;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <img src="icons/icon48.png" alt="StarWise" class="logo">
+    <h3 style="margin: 0 0 8px 0; font-size: 16px;">StarWise Lists Importer</h3>
+    <p style="margin: 0; font-size: 12px; color: #666;">Enhanced GitHub Lists Scraper</p>
+  </div>
+
+  <div id="status" class="status disconnected">
+    🔄 Checking StarWise connection...
+  </div>
+
+  <div id="stats" class="stats" style="display: none;">
+    <div class="stats-grid">
+      <div class="stat-item">
+        <span class="stat-number" id="listsCount">0</span>
+        <span class="stat-label">Lists Found</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-number" id="reposCount">0</span>
+        <span class="stat-label">Repositories</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-number" id="timeCount">0s</span>
+        <span class="stat-label">Extraction Time</span>
+      </div>
+    </div>
+  </div>
+
+  <button id="importButton" class="button primary" disabled>
+    📥 Import GitHub Lists
+  </button>
+
+  <div id="progress" class="progress" style="display: none;">
+    <div class="progress-bar">
+      <div id="progressFill" class="progress-fill" style="width: 0%"></div>
+    </div>
+  </div>
+
+  <div id="message" class="message"></div>
+
+  <div id="settings" class="settings-container" style="display: none; margin-top: 15px; border-top: 1px solid #eee; padding-top: 15px;">
+    <h4 style="margin: 0 0 10px 0; font-size: 14px;">Configuration</h4>
+    <div style="margin-bottom: 10px;">
+      <label style="display: block; font-size: 12px; color: #666; margin-bottom: 4px;">Backend URL</label>
+      <input type="text" id="backendUrlInput" placeholder="http://localhost:4000" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box;">
+    </div>
+    <div style="margin-bottom: 10px;">
+      <label style="display: block; font-size: 12px; color: #666; margin-bottom: 4px;">Frontend URL</label>
+      <input type="text" id="frontendUrlInput" placeholder="http://localhost:5173" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box;">
+    </div>
+    <button id="saveSettingsBtn" class="button primary" style="font-size: 13px; padding: 8px;">Save & Reconnect</button>
+  </div>
+
+  <div class="button-row">
+    <button id="refreshButton" class="button secondary refresh">
+      🔄 Refresh
+    </button>
+    <button id="settingsButton" class="button secondary">
+      ⚙️ Settings
+    </button>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>
