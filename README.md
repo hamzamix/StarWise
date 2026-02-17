@@ -5,6 +5,11 @@
 </p>
 
 <p align="center">
+  <strong> **Importent: check the new 1.2.0 release notes [releases v1.2.0](https://github.com/hamzamix/LoanDash/releases/tag/v1.2.0)** </strong>
+</p>
+
+
+<p align="center">
   <strong>Organize your GitHub Stars with AI-powered tagging</strong>
 </p>
 
