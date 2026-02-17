@@ -5,7 +5,7 @@
 </p>
 
 <p align="center">
-  <strong>Important: Check out the <a href="https://github.com/hamzamix/LoanDash/releases/tag/v1.2.0">v1.2.0 release notes</a></strong>
+  <strong>Important: Check out the <a href="https://github.com/hamzamix/StarWise/releases/tag/1.2.0">v1.2.0 release notes</a></strong>
 </p>
 
 
