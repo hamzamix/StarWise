@@ -53,10 +53,10 @@
 
 ## 📸 Screenshots
 
-**home without tags**
+**home 1**
 ![Starwise logo](https://raw.githubusercontent.com/hamzamix/StarWise/refs/heads/main/Screenshots/home1.png)
 
-**home with tags**
+**home 2**
 ![Starwise logo](https://raw.githubusercontent.com/hamzamix/StarWise/refs/heads/main/Screenshots/home2.png)
 
 **lists**
