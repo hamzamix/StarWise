@@ -54,13 +54,25 @@
 ## 📸 Screenshots
 
 **home without tags**
-![Roadmapper logo](https://raw.githubusercontent.com/hamzamix/StarWise/refs/heads/main/Screenshots/home.png)
+![Starwise logo](https://raw.githubusercontent.com/hamzamix/StarWise/refs/heads/main/Screenshots/home1.png)
 
 **home with tags**
-![Roadmapper logo](https://raw.githubusercontent.com/hamzamix/StarWise/refs/heads/main/Screenshots/hometags.png)
+![Starwise logo](https://raw.githubusercontent.com/hamzamix/StarWise/refs/heads/main/Screenshots/home2.png)
 
 **lists**
-![Roadmapper logo](https://raw.githubusercontent.com/hamzamix/StarWise/refs/heads/main/Screenshots/lists.png)
+![Starwise logo](https://raw.githubusercontent.com/hamzamix/StarWise/refs/heads/main/Screenshots/lists.png)
+
+**Backups**
+![Starwise logo](https://raw.githubusercontent.com/hamzamix/StarWise/refs/heads/main/Screenshots/backups.png)
+
+**Insights**
+![Starwise logo](https://raw.githubusercontent.com/hamzamix/StarWise/refs/heads/main/Screenshots/insights.png)
+
+**Settings**
+![Starwise logo](https://raw.githubusercontent.com/hamzamix/StarWise/refs/heads/main/Screenshots/settings.png)
+
+**Share Stack**
+![Starwise logo](https://raw.githubusercontent.com/hamzamix/StarWise/refs/heads/main/Screenshots/share.png)
 
 ---
 
@@ -176,6 +188,12 @@ SESSION_SECRET=generate_a_long_random_string_here
 
 # Server Configuration
 PORT=4000
+
+# AI Provider API Keys
+OPENROUTER_API_KEY=
+OPENAI_API_KEY=
+ANTHROPIC_API_KEY=
+DEFAULT_AI_PROVIDER=
 ```
 
 ---
@@ -225,6 +243,12 @@ export GITHUB_CLIENT_ID="your_actual_client_id"
 export GITHUB_CLIENT_SECRET="your_actual_secret"
 export API_KEY="your_actual_api_key"
 export SESSION_SECRET="your_secure_session_secret"
+
+# AI Provider API Keys
+OPENROUTER_API_KEY=
+OPENAI_API_KEY=
+ANTHROPIC_API_KEY=
+DEFAULT_AI_PROVIDER=
 
 # Then deploy with production compose file
 docker-compose -f docker-compose.prod.yml up --build
@@ -299,14 +323,14 @@ If StarWise helps you organize your GitHub stars, consider:
 
 ## 🎯 Roadmap
 
-- [ ] **Export/Import functionality**
-- [ ] **Backup repositories feature**
-- [ ] **Sync GitHub Lists** - Import and sync GitHub's native starred repository lists
-- [ ] **Collaboration features** (shared lists)
-- [ ] **Browser extension**
-- [ ] **Advanced analytics**
+- [✅] **Export/Import functionality**
+- [✅] **Backup repositories feature**
+- [✅] **Sync GitHub Lists** - Import and sync GitHub's native starred repository lists
+- [✅] **Collaboration features** (shared lists)
+- [✅] **Browser extension**
+- [✅] **Advanced analytics**
 - [ ] **Mobile app**
-- [ ] **Additional AI providers**
+- [✅] **Additional AI providers**
 - [ ] **Team/Organization support**
 
 ---
